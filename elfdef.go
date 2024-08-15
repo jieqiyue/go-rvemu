@@ -16,6 +16,9 @@ const ElfClass32 = 1
 const ElfClass64 = 2
 const ElfClassSum = 3
 
+// Elf64PhdrPTypeLoad 代表这个段是否是要加载到内存的
+const Elf64PhdrPTypeLoad = 1
+
 type Elf64EhdrT struct {
 	EIdent     [EiNident]uint8
 	EType      uint16
@@ -31,4 +34,15 @@ type Elf64EhdrT struct {
 	EShentsize uint16
 	EShnum     uint16
 	EShstrndx  uint16
+}
+
+type Elf64PhdrT struct {
+	PType   uint32
+	PFlags  uint32
+	POffset uint64
+	PVaddr  uint64
+	PPaddr  uint64
+	PFilesz uint64
+	PMemsz  uint64
+	PAlign  uint64
 }
