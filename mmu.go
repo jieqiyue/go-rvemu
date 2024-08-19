@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/binary"
 	"errors"
-	"golang.org/x/sys/unix"
 	"os"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 // HostMemOffset 将这个内存地址作为被加载的起始地址
