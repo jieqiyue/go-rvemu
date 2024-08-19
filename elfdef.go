@@ -19,6 +19,11 @@ const ElfClassSum = 3
 // Elf64PhdrPTypeLoad 代表这个段是否是要加载到内存的
 const Elf64PhdrPTypeLoad = 1
 
+// PFX 标识LEF文件中这个segment段的属性
+const PFX = 0x1
+const PFW = 0x2
+const PFR = 0x4
+
 type Elf64EhdrT struct {
 	EIdent     [EiNident]uint8
 	EType      uint16

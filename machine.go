@@ -25,5 +25,6 @@ func (machine *Machine) MachineLoadProgram(path string) {
 	}
 
 	// 打印 ELF 头部信息
+
 	fmt.Printf("Entry: %d\n", machine.mmu.EEntry)
 }
