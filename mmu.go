@@ -14,7 +14,10 @@ import (
 const HostMemOffset = 0x088800000000
 
 type Mmu struct {
-	EEntry uint64
+	EEntry    uint64
+	HostAlloc uint64
+	Alloc     uint64
+	Base      uint64
 }
 
 func elfFlagsToMmapProt(flags uint32) int {
@@ -82,10 +85,9 @@ func (mmu *Mmu) MmuLoadSegment(phdr *Elf64PhdrT, file *os.File) error {
 
 	// 满足这个的条件是offset的pageDown和vaAddr的pageDown是相等的
 	// 关于MmapPtr函数：https://blog.csdn.net/qq_43009242/article/details/141318064
-	//
 	memAddr, err := unix.MmapPtr(int(file.Fd()), int64(PageDown(offset, uint64(pageSize))), unsafe.Pointer(uintptr(alignedVaAddr)), uintptr(fileSize), prot, syscall.MAP_PRIVATE|syscall.MAP_FIXED)
 	if err != nil {
-		DPrintf("MMU mmap segment to memory fail, err: %v", err.Error())
+		DPrintf("MMU mmap segment to memory fail, err: %v\n", err.Error())
 		return err
 	}
 
@@ -96,9 +98,23 @@ func (mmu *Mmu) MmuLoadSegment(phdr *Elf64PhdrT, file *os.File) error {
 	DPrintf("mmap over, memSize: %v\n", memSize)
 	DPrintf("mmap over, prot: %v\n", prot)
 
-	if uintptr(memAddr) != uintptr(alignedVaAddr) {
-		DPrintf("MMU mmap a segment to a ")
+	assert(uintptr(memAddr) == uintptr(alignedVaAddr), "MMU mmap a segment to memory fail, alloc memory address not equal to desire address")
+
+	remainingBss := PageUp(memSize, uint64(pageSize)) - PageUp(fileSize, uint64(pageSize))
+	// 如果memSize大于fileSize，则表示超过一个页了，则需要再次分配bss段内存
+	if remainingBss > 0 {
+		bssAddr, err := unix.MmapPtr(-1, 0, unsafe.Pointer(uintptr(alignedVaAddr+PageUp(fileSize, uint64(pageSize)))), uintptr(remainingBss), prot, syscall.MAP_PRIVATE|syscall.MAP_FIXED|syscall.MAP_ANONYMOUS)
+		if err != nil {
+			DPrintf("MMU mmap bss to mem fail, err: %s\n", err.Error())
+			return err
+		}
+
+		assert(uintptr(bssAddr) == uintptr(alignedVaAddr+PageUp(fileSize, uint64(pageSize))), "MMU mmap bss fail")
 	}
+
+	mmu.HostAlloc = Max(mmu.HostAlloc, alignedVaAddr+PageUp(memSize, uint64(pageSize)))
+	mmu.Alloc = mmu.ToGuest(mmu.HostAlloc)
+	mmu.Base = mmu.Alloc
 
 	return nil
 }
