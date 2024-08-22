@@ -9,13 +9,21 @@ func funcLb(state *State, instruction *Instruction) {
 type FuncName string
 
 const (
-	func_lb FuncName = "funcLb"
+	FuncLb FuncName = "FuncLb"
+
+	InsnLb  FuncName = "InsnLb"
+	InsnLh  FuncName = "InsnLh"
+	InsnLw  FuncName = "InsnLw"
+	InsnLd  FuncName = "InsnLd"
+	InsnLbu FuncName = "InsnLbu"
+	InsnLhu FuncName = "InsnLhu"
+	InsnLwu FuncName = "InsnLwu"
 )
 
 var InstrFuncs = make(map[FuncName]InstrFunc)
 
 func init() {
-	InstrFuncs[func_lb] = funcLb
+	InstrFuncs[FuncLb] = funcLb
 }
 
 func ExecBlockInterp(state *State) {

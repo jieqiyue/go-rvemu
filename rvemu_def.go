@@ -70,6 +70,9 @@ type Instruction struct {
 	rd    uint8
 	rs1   uint8
 	rs2   uint8
+	rs3   uint8
+	imm   uint32
+	csr   uint16
 	iType FuncName
 	rvc   bool
 	cont  bool
