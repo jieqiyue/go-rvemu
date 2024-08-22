@@ -97,8 +97,58 @@ func InstructionDecode(instruction *Instruction, data uint32) {
 			}
 			UnReachable()
 		case 0x1:
+			funct3 := Funct3(data)
 
+			InstrITypeRead(instruction, data)
+			switch funct3 {
+			case 0x2:
+				instruction.iType = InsnFlw
+				return
+			case 0x3:
+				instruction.iType = InsnFld
+				return
+			default:
+				UnReachable()
+			}
+			UnReachable()
+		case 0x3:
+			UnReachable()
+		case 0x4:
+			UnReachable()
+		case 0x5:
+			UnReachable()
+		case 0x6:
+			UnReachable()
+		case 0x8:
+			UnReachable()
+		case 0xc:
+			UnReachable()
+		case 0xd:
+			UnReachable()
+		case 0xe:
+			UnReachable()
+		case 0x10:
+			UnReachable()
+		case 0x11:
+			UnReachable()
+		case 0x12:
+			UnReachable()
+		case 0x13:
+			UnReachable()
+		case 0x14:
+			UnReachable()
+		case 0x18:
+			UnReachable()
+		case 0x19:
+			UnReachable()
+		case 0x1b:
+			UnReachable()
+		case 0x1c:
+			UnReachable()
+		default:
+			UnReachable()
 		}
+		UnReachable()
 	default:
 		UnReachable()
 	}

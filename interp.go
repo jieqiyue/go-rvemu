@@ -18,6 +18,9 @@ const (
 	InsnLbu FuncName = "InsnLbu"
 	InsnLhu FuncName = "InsnLhu"
 	InsnLwu FuncName = "InsnLwu"
+
+	InsnFlw FuncName = "InsnFlw"
+	InsnFld FuncName = "InsnFld"
 )
 
 var InstrFuncs = make(map[FuncName]InstrFunc)
