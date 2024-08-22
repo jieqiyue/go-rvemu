@@ -46,11 +46,11 @@ func PageUp(address uint64, pageSize uint64) uint64 {
 }
 
 // ToHost 将内存地址转化为Host程序的内存地址
-func (mmu *Mmu) ToHost(origin uint64) uint64 {
+func ToHost(origin uint64) uint64 {
 	return origin + HostMemOffset
 }
 
-func (mmu *Mmu) ToGuest(origin uint64) uint64 {
+func ToGuest(origin uint64) uint64 {
 	return origin - HostMemOffset
 }
 
@@ -77,7 +77,7 @@ func (mmu *Mmu) MmuLoadSegment(phdr *Elf64PhdrT, file *os.File) error {
 	pageSize := syscall.Getpagesize()
 	// 该段所在文件的偏移量（不是从头开始偏移的？）
 	offset := phdr.POffset
-	vaAddr := mmu.ToHost(phdr.PVaddr)
+	vaAddr := ToHost(phdr.PVaddr)
 	alignedVaAddr := PageDown(vaAddr, uint64(pageSize))
 	fileSize := phdr.PFilesz + (vaAddr - alignedVaAddr) // 3576
 	memSize := phdr.PMemsz + (vaAddr - alignedVaAddr)
@@ -113,7 +113,7 @@ func (mmu *Mmu) MmuLoadSegment(phdr *Elf64PhdrT, file *os.File) error {
 	}
 
 	mmu.HostAlloc = Max(mmu.HostAlloc, alignedVaAddr+PageUp(memSize, uint64(pageSize)))
-	mmu.Alloc = mmu.ToGuest(mmu.HostAlloc)
+	mmu.Alloc = ToGuest(mmu.HostAlloc)
 	mmu.Base = mmu.Alloc
 
 	return nil

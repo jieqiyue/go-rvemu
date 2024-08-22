@@ -6,7 +6,23 @@ import (
 )
 
 type Machine struct {
-	mmu *Mmu
+	Mmu   *Mmu
+	State *State
+}
+
+func (machine *Machine) MachineStep() ExitReason {
+	for {
+		ExecBlockInterp(machine.State)
+
+		if machine.State.exitReason == InDirectBranch || machine.State.exitReason == DirectBranch {
+			continue
+		}
+		break
+	}
+
+	assert(machine.State.exitReason == ECall, "not a reasonable exit reason")
+
+	return ECall
 }
 
 func (machine *Machine) MachineLoadProgram(path string) {
@@ -19,12 +35,13 @@ func (machine *Machine) MachineLoadProgram(path string) {
 
 	defer file.Close()
 
-	if err = machine.mmu.MmuLoadElf(file); err != nil {
+	if err = machine.Mmu.MmuLoadElf(file); err != nil {
 		DPrintf("Machine fail load elf, err: %v\n", err.Error())
 		return
 	}
 
 	// 打印 ELF 头部信息
-	fmt.Printf("Entry: %d\n", machine.mmu.EEntry)
-	fmt.Printf("MMU:%v\n", machine.mmu)
+	fmt.Printf("Entry: %d\n", machine.Mmu.EEntry)
+	fmt.Printf("MMU:%v\n", machine.Mmu)
+	machine.State.pc = machine.Mmu.EEntry
 }

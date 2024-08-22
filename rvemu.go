@@ -14,8 +14,16 @@ func main() {
 	}
 
 	machine := &Machine{
-		mmu: &Mmu{},
+		Mmu:   &Mmu{},
+		State: &State{},
 	}
 
 	machine.MachineLoadProgram(os.Args[1])
+
+	for {
+		exitReson := machine.MachineStep()
+		assert(exitReson == ECall, "")
+	}
+
+	return
 }
