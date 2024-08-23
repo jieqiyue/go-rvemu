@@ -21,6 +21,69 @@ const (
 
 	InsnFlw FuncName = "InsnFlw"
 	InsnFld FuncName = "InsnFld"
+
+	InsnFence  FuncName = "InsnFence"
+	InsnFenceI FuncName = "InsnFenceI"
+
+	InsnAddi  FuncName = "InsnAddi"
+	InsnSlli  FuncName = "InsnSlli"
+	InsnSlti  FuncName = "InsnSlti"
+	InsnSltiu FuncName = "InsnSltiu"
+	InsnXori  FuncName = "InsnXori"
+	InsnSrli  FuncName = "InsnSrli"
+	InsnSrai  FuncName = "InsnSrai"
+	InsnOri   FuncName = "InsnOri"
+	InsnAndi  FuncName = "InsnAndi"
+
+	InsnAuipc FuncName = "InsnAuipc"
+
+	InsnAddiw FuncName = "InsnAddiw"
+	InsnSlliw FuncName = "InsnSlliw"
+	InsnSrliw FuncName = "InsnSrliw"
+	InsnSraiw FuncName = "InsnSraiw"
+
+	InsnSb FuncName = "InsnSb"
+	InsnSh FuncName = "InsnSh"
+	InsnSw FuncName = "InsnSw"
+	InsnSd FuncName = "InsnSd"
+
+	InsnFsw FuncName = "InsnFsw"
+	InsnFsd FuncName = "InsnFsd"
+
+	InsnAdd  FuncName = "InsnAdd"
+	InsnSll  FuncName = "InsnSll"
+	InsnSlt  FuncName = "InsnSlt"
+	InsnSltu FuncName = "InsnSltu"
+	InsnXor  FuncName = "InsnXor"
+	InsnSrl  FuncName = "InsnSrl"
+	InsnOr   FuncName = "InsnOr"
+	InsnAnd  FuncName = "InsnAnd"
+
+	InsnMul    FuncName = "InsnMul"
+	InsnMulh   FuncName = "InsnMulh"
+	InsnMulhsu FuncName = "InsnMulhsu"
+	InsnMulhu  FuncName = "InsnMulhu"
+	InsnDiv    FuncName = "InsnDiv"
+	InsnDivu   FuncName = "InsnDivu"
+	InsnRem    FuncName = "InsnRem"
+	InsnRemu   FuncName = "InsnRemu"
+	InsnSub    FuncName = "InsnSub"
+	InsnSra    FuncName = "InsnSra"
+
+	InsnLui FuncName = "InsnLui"
+
+	InsnAddw FuncName = "InsnAddw"
+	InsnSllw FuncName = "InsnSllw"
+	InsnSrlw FuncName = "InsnSrlw"
+
+	InsnMulw  FuncName = "InsnMulw"
+	InsnDivw  FuncName = "InsnDivw"
+	InsnDivuw FuncName = "InsnDivuw"
+	InsnRemw  FuncName = "InsnRemw"
+	InsnRemuw FuncName = "InsnRemuw"
+
+	InsnSubw FuncName = "InsnSubw"
+	InsnSraw FuncName = "InsnSraw"
 )
 
 var InstrFuncs = make(map[FuncName]InstrFunc)

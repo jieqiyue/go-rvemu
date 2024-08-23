@@ -13,8 +13,8 @@ const (
 type InsnType string
 
 const (
-	InsnAddi InsnType = "InsnAddi"
-	NumInsns InsnType = "NumInsns"
+//InsnAddi InsnType = "InsnAddi"
+//NumInsns InsnType = "NumInsns"
 )
 
 // GpRegType 32个通用寄存器
@@ -67,12 +67,12 @@ type State struct {
 }
 
 type Instruction struct {
-	rd    uint8
-	rs1   uint8
-	rs2   uint8
-	rs3   uint8
-	imm   uint32
-	csr   uint16
+	rd    int8
+	rs1   int8
+	rs2   int8
+	rs3   int8
+	imm   int32
+	csr   int16
 	iType FuncName
 	rvc   bool
 	cont  bool
