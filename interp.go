@@ -84,6 +84,71 @@ const (
 
 	InsnSubw FuncName = "InsnSubw"
 	InsnSraw FuncName = "InsnSraw"
+
+	InsnFmaddS FuncName = "InsnFmaddS"
+	InsnFmaddD FuncName = "InsnFmaddD"
+
+	InsnFmsubS FuncName = "InsnFmsubS"
+	InsnFmsubD FuncName = "InsnFmsubD"
+
+	InsnFnmsubS FuncName = "InsnFnmsubS"
+	InsnFnmsubD FuncName = "InsnFnmsubD"
+
+	InsnFnmaddS FuncName = "InsnFnmaddS"
+	InsnFnmaddD FuncName = "InsnFnmaddD"
+
+	InsnFaddS FuncName = "InsnFaddS"
+	InsnFaddD FuncName = "InsnFaddD"
+	InsnFsubS FuncName = "InsnFsubS"
+	InsnFsubD FuncName = "InsnFsubD"
+	InsnFmulS FuncName = "InsnFmulS"
+	InsnFmulD FuncName = "InsnFmulD"
+	InsnFdivS FuncName = "InsnFdivS"
+	InsnFdivD FuncName = "InsnFdivD"
+
+	InsnFsgnjS  FuncName = "InsnFsgnjS"
+	InsnFsgnjnS FuncName = "InsnFsgnjnS"
+	InsnFsgnjxS FuncName = "InsnFsgnjxS"
+
+	InsnFsgnjD  FuncName = "InsnFsgnjD"
+	InsnFsgnjnD FuncName = "InsnFsgnjnD"
+	InsnFsgnjxD FuncName = "InsnFsgnjxD"
+
+	InsnFminS FuncName = "InsnFminS"
+	InsnFmaxS FuncName = "InsnFmaxS"
+
+	InsnFminD FuncName = "InsnFminD"
+	InsnFmaxD FuncName = "InsnFmaxD"
+
+	InsnFcvtSD FuncName = "InsnFcvtSD"
+	InsnFcvtDS FuncName = "InsnFcvtDS"
+	InsnFsqrtS FuncName = "InsnFsqrtS"
+	InsnFsqrtD FuncName = "InsnFsqrtD"
+
+	InsnFleS FuncName = "InsnFleS"
+	InsnFltS FuncName = "InsnFltS"
+	InsnFeqS FuncName = "InsnFeqS"
+
+	InsnFleD FuncName = "InsnFleD"
+	InsnFltD FuncName = "InsnFltD"
+	InsnFeqD FuncName = "InsnFeqD"
+
+	InsnFcvtWS  FuncName = "InsnFcvtWS"
+	InsnFcvtWuS FuncName = "InsnFcvtWuS"
+	InsnFcvtLS  FuncName = "InsnFcvtLS"
+	InsnFcvtLuS FuncName = "InsnFcvtLuS"
+
+	InsnFcvtWD  FuncName = "InsnFcvtWD"
+	InsnFcvtWud FuncName = "InsnFcvtWud"
+	InsnFcvtLD  FuncName = "InsnFcvtLD"
+	InsnFcvtLuD FuncName = "InsnFcvtLuD"
+
+	InsnFcvtSW  FuncName = "InsnFcvtSW"
+	InsnFcvtSWu FuncName = "InsnFcvtSWu"
+	InsnFcvtSL  FuncName = "InsnFcvtSL"
+	InscFcvtSLu FuncName = "InscFcvtSLu"
+
+	InsnFcvtDW FuncName = "InsnFcvtDW"
 )
 
 var InstrFuncs = make(map[FuncName]InstrFunc)
