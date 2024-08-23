@@ -46,6 +46,22 @@ func Imm116(data uint32) uint32 {
 	return (data >> 26) & 0x3f
 }
 
+func InstrBTypeRead(instruction *Instruction, data uint32) {
+	imm12 := (data >> 31) & 0x1
+	imm105 := (data >> 25) & 0x3f
+	imm41 := (data >> 8) & 0xf
+	imm11 := (data >> 7) & 0x1
+
+	imm := int32((imm12 << 12) | (imm11 << 11) | (imm105 << 5) | (imm41 << 1))
+	imm = (imm << 19) >> 19
+
+	instruction.imm = imm
+	instruction.rs1 = int8(Rs1(data))
+	instruction.rs2 = int8(Rs2(data))
+
+	return
+}
+
 func InstrITypeRead(instruction *Instruction, data uint32) {
 	instruction.imm = int32(data >> 20)
 	instruction.rs1 = int8(Rs1(data))
@@ -76,6 +92,37 @@ func InstrSTypeRead(instruction *Instruction, data uint32) {
 func InstrRTypeRead(instruction *Instruction, data uint32) {
 	instruction.rs1 = int8(Rs1(data))
 	instruction.rs2 = int8(Rs2(data))
+	instruction.rd = int8(Rd(data))
+
+	return
+}
+
+func InstrFprTypeRead(instruction *Instruction, data uint32) {
+	instruction.rs1 = int8(Rs1(data))
+	instruction.rs2 = int8(Rs2(data))
+	instruction.rs3 = int8(Rs3(data))
+	instruction.rd = int8(Rd(data))
+
+	return
+}
+
+func InstrJTypeRead(instruction *Instruction, data uint32) {
+	imm20 := (data >> 31) & 0x1
+	imm101 := (data >> 21) & 0x3ff
+	imm11 := (data >> 20) & 0x1
+	imm1912 := (data >> 12) & 0xff
+
+	imm := int32((imm20 << 20) | (imm1912 << 12) | (imm11 << 11) | (imm101 << 1))
+	imm = (imm << 11) >> 11
+
+	instruction.imm = imm
+	instruction.rd = int8(Rd(data))
+	return
+}
+
+func InstrCsrTypeRead(instruction *Instruction, data uint32) {
+	instruction.csr = int16(data >> 20)
+	instruction.rs1 = int8(Rs1(data))
 	instruction.rd = int8(Rd(data))
 
 	return
@@ -411,22 +458,392 @@ func InstructionDecode(instruction *Instruction, data uint32) {
 			}
 			UnReachable()
 		case 0x10:
+			funct2 := Funct2(data)
+			InstrFprTypeRead(instruction, data)
+			switch funct2 {
+			case 0x0:
+				instruction.iType = InsnFmaddS
+				return
+			case 0x1:
+				instruction.iType = InsnFmaddD
+				return
+			default:
+				UnReachable()
+			}
 			UnReachable()
 		case 0x11:
+			funct2 := Funct2(data)
+
+			InstrFprTypeRead(instruction, data)
+			switch funct2 {
+			case 0x0:
+				instruction.iType = InsnFmsubS
+				return
+			case 0x1:
+				instruction.iType = InsnFmsubD
+				return
+			default:
+				UnReachable()
+			}
 			UnReachable()
 		case 0x12:
+			funct2 := Funct2(data)
+
+			InstrFprTypeRead(instruction, data)
+			switch funct2 {
+			case 0x0:
+				instruction.iType = InsnFnmsubS
+				return
+			case 0x1:
+				instruction.iType = InsnFnmsubD
+				return
+			default:
+				UnReachable()
+			}
 			UnReachable()
 		case 0x13:
+			funct2 := Funct2(data)
+			InstrFprTypeRead(instruction, data)
+
+			switch funct2 {
+			case 0x0:
+				instruction.iType = InsnFnmaddS
+				return
+			case 0x1:
+				instruction.iType = InsnFnmaddD
+				return
+			default:
+				UnReachable()
+			}
 			UnReachable()
 		case 0x14:
+			funct7 := Funct7(data)
+
+			InstrRTypeRead(instruction, data)
+			switch funct7 {
+			case 0x0:
+				instruction.iType = InsnFaddS
+				return
+			case 0x1:
+				instruction.iType = InsnFaddD
+				return
+			case 0x4:
+				instruction.iType = InsnFsubS
+				return
+			case 0x5:
+				instruction.iType = InsnFsubD
+				return
+			case 0x8:
+				instruction.iType = InsnFmulS
+				return
+			case 0x9:
+				instruction.iType = InsnFmulD
+				return
+			case 0xc:
+				instruction.iType = InsnFdivS
+				return
+			case 0xd:
+				instruction.iType = InsnFdivD
+				return
+			case 0x10:
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFsgnjS
+					return
+				case 0x1:
+					instruction.iType = InsnFsgnjnS
+					return
+				case 0x2:
+					instruction.iType = InsnFsgnjxS
+					return
+				default:
+					UnReachable()
+				}
+			case 0x11:
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFsgnjD
+					return
+				case 0x1:
+					instruction.iType = InsnFsgnjnD
+					return
+				case 0x2:
+					instruction.iType = InsnFsgnjxD
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x14:
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFminS
+					return
+				case 0x1:
+					instruction.iType = InsnFmaxS
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x15:
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFminD
+					return
+				case 0x1:
+					instruction.iType = InsnFmaxD
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x20:
+				assert(Rs2(data) == 1, "FCVT.S.D rs2 is not zero")
+				instruction.iType = InsnFcvtSD
+				return
+			case 0x21:
+				assert(Rs2(data) == 0, "FCVT.D.S rs2 is not zero")
+				instruction.iType = InsnFcvtDS
+				return
+			case 0x2c:
+				assert(Rs2(data) == 0, "FSQRT.S rs2 is not zero")
+				instruction.iType = InsnFsqrtS
+				return
+			case 0x2d:
+				assert(Rs2(data) == 0, "FSQRT.D rs2 is not zero")
+				instruction.iType = InsnFsqrtD
+				return
+			case 0x50:
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFleS
+					return
+				case 0x1:
+					instruction.iType = InsnFltS
+					return
+				case 0x2:
+					instruction.iType = InsnFeqS
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x51:
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFleD
+					return
+				case 0x1:
+					instruction.iType = InsnFltD
+					return
+				case 0x2:
+					instruction.iType = InsnFeqD
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x60:
+				rs2 := Rs2(data)
+
+				switch rs2 {
+				case 0x0:
+					instruction.iType = InsnFcvtWS
+					return
+				case 0x1:
+					instruction.iType = InsnFcvtWuS
+					return
+				case 0x2:
+					instruction.iType = InsnFcvtLS
+					return
+				case 0x3:
+					instruction.iType = InsnFcvtLuS
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x61:
+				rs2 := Rs2(data)
+				switch rs2 {
+				case 0x0:
+					instruction.iType = InsnFcvtWD
+					return
+				case 0x1:
+					instruction.iType = InsnFcvtWud
+					return
+				case 0x2:
+					instruction.iType = InsnFcvtLD
+					return
+				case 0x3:
+					instruction.iType = InsnFcvtLuD
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x68:
+				rs2 := Rs2(data)
+
+				switch rs2 {
+				case 0x0:
+					instruction.iType = InsnFcvtSW
+					return
+				case 0x1:
+					instruction.iType = InsnFcvtSWu
+					return
+				case 0x2:
+					instruction.iType = InsnFcvtSL
+					return
+				case 0x3:
+					instruction.iType = InscFcvtSLu
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x69:
+				rs2 := Rs2(data)
+
+				switch rs2 {
+				case 0x0:
+					instruction.iType = InsnFcvtDW
+					return
+				case 0x1:
+					instruction.iType = InsnFcvtDWu
+					return
+				case 0x2:
+					instruction.iType = InsnFcvtDL
+					return
+				case 0x3:
+					instruction.iType = InsnFcvtDLu
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x70:
+				assert(Rs2(data) == 0, "case 0x70 rs2 is not zero")
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFmvXW
+					return
+				case 0x1:
+					instruction.iType = InsnFclassS
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x71:
+				assert(Rs2(data) == 0, "case 0x71 rs2 is not zero")
+				funct3 := Funct3(data)
+
+				switch funct3 {
+				case 0x0:
+					instruction.iType = InsnFmvXD
+					return
+				case 0x1:
+					instruction.iType = InsnFclassD
+					return
+				default:
+					UnReachable()
+				}
+				UnReachable()
+			case 0x78:
+				assert(Rs2(data) == 0, "FMV.W.X rs2 is not zero")
+				instruction.iType = InsnFmvWX
+				return
+			case 0x79:
+				assert(Rs2(data) == 0, "FMV.D.X rs2 is not zero")
+				instruction.iType = InsnFmvDX
+				return
+			default:
+				UnReachable()
+			}
 			UnReachable()
 		case 0x18:
+			InstrBTypeRead(instruction, data)
+
+			funct3 := Funct3(data)
+			switch funct3 {
+			case 0x0: /* BEQ */
+				instruction.iType = InsnBeq
+				return
+			case 0x1: /* BNE */
+				instruction.iType = InsnBne
+				return
+			case 0x4: /* BLT */
+				instruction.iType = InsnBlt
+				return
+			case 0x5: /* BGE */
+				instruction.iType = InsnBge
+				return
+			case 0x6: /* BLTU */
+				instruction.iType = InsnBltu
+				return
+			case 0x7:
+				instruction.iType = InsnBgeu
+			default:
+				UnReachable()
+			}
 			UnReachable()
-		case 0x19:
-			UnReachable()
+		case 0x19: /* JALR */
+			InstrITypeRead(instruction, data)
+			instruction.iType = InsnJalr
+			instruction.cont = true
+			return
 		case 0x1b:
-			UnReachable()
+			InstrJTypeRead(instruction, data)
+			instruction.iType = InsnJal
+			instruction.cont = true
+			return
 		case 0x1c:
+			if data == 0x73 {
+				instruction.iType = InsnEcall
+				instruction.cont = true
+				return
+			}
+
+			funct3 := Funct3(data)
+			InstrCsrTypeRead(instruction, data)
+			switch funct3 {
+			case 0x1:
+				instruction.iType = InsnCsrrw
+				return
+			case 0x2:
+				instruction.iType = InsnCsrrs
+				return
+			case 0x3:
+				instruction.iType = InsnCsrrc
+				return
+			case 0x5:
+				instruction.iType = InsnCsrrwi
+				return
+			case 0x6:
+				instruction.iType = InsnCsrrsi
+				return
+			case 0x7:
+				instruction.iType = InsnCsrrci
+				return
+			default:
+				UnReachable()
+			}
 			UnReachable()
 		default:
 			UnReachable()
