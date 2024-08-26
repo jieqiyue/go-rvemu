@@ -1,16 +1,20 @@
 package main
 
+import "unsafe"
+
 type InstrFunc func(state *State, instruction *Instruction)
 
 func funcLb(state *State, instruction *Instruction) {
+	addr := int64(state.gpRegs[instruction.rs1]) + int64(instruction.imm)
+	addr = int64(ToHost(uint64(addr)))
 
+	p := (*uint8)(unsafe.Pointer(uintptr(addr)))
+	state.gpRegs[instruction.rd] = uint64(*p)
 }
 
 type FuncName string
 
 const (
-	FuncLb FuncName = "FuncLb"
-
 	InsnLb  FuncName = "InsnLb"
 	InsnLh  FuncName = "InsnLh"
 	InsnLw  FuncName = "InsnLw"
@@ -148,13 +152,46 @@ const (
 	InsnFcvtSL  FuncName = "InsnFcvtSL"
 	InscFcvtSLu FuncName = "InscFcvtSLu"
 
-	InsnFcvtDW FuncName = "InsnFcvtDW"
+	InsnFcvtDW  FuncName = "InsnFcvtDW"
+	InsnFcvtDWu FuncName = "InsnFcvtDWu"
+	InsnFcvtDL  FuncName = "InsnFcvtDL"
+	InsnFcvtDLu FuncName = "InsnFcvtDLu"
+
+	InsnFmvXW   FuncName = "InsnFmvXW"
+	InsnFclassS FuncName = "InsnFclassS"
+
+	InsnFmvXD FuncName = "InsnFmvXD"
+
+	InsnFclassD FuncName = "InsnFclassD"
+
+	InsnFmvWX FuncName = "InsnFmvWX"
+
+	InsnFmvDX FuncName = "InsnFmvDX"
+
+	InsnBeq  FuncName = "InsnBeq"
+	InsnBne  FuncName = "InsnBne"
+	InsnBlt  FuncName = "InsnBlt"
+	InsnBge  FuncName = "InsnBge"
+	InsnBltu FuncName = "InsnBltu"
+	InsnBgeu FuncName = "InsnBgeu"
+
+	InsnJalr FuncName = "InsnJalr"
+	InsnJal  FuncName = "InsnJal"
+
+	InsnEcall FuncName = "InsnEcall"
+
+	InsnCsrrw  FuncName = "InsnCsrrw"
+	InsnCsrrs  FuncName = "InsnCsrrs"
+	InsnCsrrc  FuncName = "InsnCsrrc"
+	InsnCsrrwi FuncName = "InsnCsrrwi"
+	InsnCsrrsi FuncName = "InsnCsrrsi"
+	InsnCsrrci FuncName = "InsnCsrrci"
 )
 
 var InstrFuncs = make(map[FuncName]InstrFunc)
 
 func init() {
-	InstrFuncs[FuncLb] = funcLb
+	InstrFuncs[InsnLb] = funcLb
 }
 
 func ExecBlockInterp(state *State) {

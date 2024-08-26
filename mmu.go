@@ -14,10 +14,13 @@ import (
 const HostMemOffset = 0x088800000000
 
 type Mmu struct {
-	EEntry    uint64
+	EEntry uint64
+	// Host程序使用了多少内存了
 	HostAlloc uint64
-	Alloc     uint64
-	Base      uint64
+	// 站在Guest的视角，用了多少内存了
+	Alloc uint64
+	// 站在Guest视角，当前最小分配的内存位置，当不断分配内存的时候，Alloc会不断增长，所以Alloc是大于Base的
+	Base uint64
 }
 
 func elfFlagsToMmapProt(flags uint32) int {
@@ -78,6 +81,7 @@ func (mmu *Mmu) MmuLoadSegment(phdr *Elf64PhdrT, file *os.File) error {
 	// 该段所在文件的偏移量（不是从头开始偏移的？）
 	offset := phdr.POffset
 	vaAddr := ToHost(phdr.PVaddr)
+	// 向下取整的虚拟地址
 	alignedVaAddr := PageDown(vaAddr, uint64(pageSize))
 	fileSize := phdr.PFilesz + (vaAddr - alignedVaAddr) // 3576
 	memSize := phdr.PMemsz + (vaAddr - alignedVaAddr)
@@ -112,6 +116,7 @@ func (mmu *Mmu) MmuLoadSegment(phdr *Elf64PhdrT, file *os.File) error {
 		assert(uintptr(bssAddr) == uintptr(alignedVaAddr+PageUp(fileSize, uint64(pageSize))), "MMU mmap bss fail")
 	}
 
+	// alignedVaAddr是已经转化为Host内存地址的，所以这个地方的HostAlloc也是表示Host内存的分配情况
 	mmu.HostAlloc = Max(mmu.HostAlloc, alignedVaAddr+PageUp(memSize, uint64(pageSize)))
 	mmu.Alloc = ToGuest(mmu.HostAlloc)
 	mmu.Base = mmu.Alloc
@@ -161,4 +166,13 @@ func (mmu *Mmu) MmuLoadElf(file *os.File) error {
 	}
 
 	return nil
+}
+
+func (mmu *Mmu) MmuAlloc(sz int64) {
+	pageSize := syscall.Getpagesize()
+	base := mmu.Alloc
+	assert(base >= mmu.Base, "MMU alloc found Alloc is less than Base")
+
+	mmu.Alloc = uint64(int64(mmu.Alloc) + sz)
+
 }
